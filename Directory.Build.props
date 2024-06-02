@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+
+    <Authors>gerleim</Authors>
+    <Copyright>Copyright © 2024 gerleim</Copyright>
+    <Product>CofD Roller</Product>
+    <RepositoryUrl>https://github.com/gerleim/CofDRoller</RepositoryUrl>
+
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    
+  </PropertyGroup>
+</Project>
