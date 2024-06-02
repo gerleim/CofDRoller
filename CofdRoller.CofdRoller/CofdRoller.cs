@@ -2,21 +2,21 @@
 
 public class CofdRoller : CofdRollerBase
 {
-    public new Result Roll(int dices)
+    public Result Roll(int dices)
     {
         var rollResults = base.Roll(dices);
         var result = new Result (dices, rollResults);
         return result;
     }
 
-    public new Result Roll9Again(int dices)
+    public Result Roll9Again(int dices)
     {
         var rollResults = base.Roll(dices, 9);
         var result = new Result(dices, rollResults, RollTypes._9Again);
         return result;
     }
 
-    public new Result Roll8Again(int dices)
+    public Result Roll8Again(int dices)
     {
         var rollResults = base.Roll(dices, 8);
         var result = new Result(dices, rollResults, RollTypes._8Again);

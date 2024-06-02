@@ -4,12 +4,12 @@ using System.Text;
 namespace CofDRoller;
 
 [DebuggerDisplay("{ToString()}")]
-public class ExtendedActionResults : List<Result>
+public class ExtendedActionResults(int dices, int requiredSuccesses, int rollLimit) : List<Result>
 {
-    public int Dices { get; set; }
-    public int RequiredSuccesses { get; set; }
-    public int RollLimit { get; set; }
-    
+    public int Dices { get; set; } = dices;
+    public int RequiredSuccesses { get; set; } = requiredSuccesses;
+    public int RollLimit { get; set; } = rollLimit;
+
     private ResultType resultType;
     
     public ResultType ResultType {
@@ -37,13 +37,6 @@ public class ExtendedActionResults : List<Result>
             
             return successes;
         }
-    }
-
-    public ExtendedActionResults(int dices, int requiredSuccesses, int rollLimit)
-    {
-        Dices = dices;
-        RequiredSuccesses = requiredSuccesses;
-        RollLimit = rollLimit;
     }
 
     private void Evaluate()

@@ -1,39 +1,93 @@
-﻿namespace CofDRoller.Console;
+﻿using CommandDotNet;
+using CommandDotNet.Help;
+using System.Text.RegularExpressions;
 
-internal class Program
+namespace CofDRoller.Console;
+
+public static partial class Program
 {
-    static void Main(string[] args)
+    public static Config Config { get; private set; } = new Config();
+    public static bool Terminated { get; set; }
+    public static ConsoleCommand ConsoleCommand { get; } = new ConsoleCommand(ConsoleCommandHelper.GetCommands(typeof(AppCommands)));
+
+    public static void Main(string[] args)
     {
-        RepeatWriteLine(() => new CofdRoller().Roll(0));
-        RepeatWriteLine(() => new CofdRoller().Roll(1));
-        RepeatWriteLine(() => new CofdRoller().Roll(5));
-        RepeatWriteLine(() => new CofdRoller().RollRote(0));
-        RepeatWriteLine(() => new CofdRoller().RollRote(5));
+        Config = ConfigurationLoader.Load();
 
-        RepeatWriteLine(() => CofdStatistics.Avg(1));
-        RepeatWriteLine(() => CofdStatistics.Avg(2));
-        RepeatWriteLine(() => CofdStatistics.Avg(3));
-        RepeatWriteLine(() => CofdStatistics.Avg(4));
-        RepeatWriteLine(() => CofdStatistics.Avg(5));
-        RepeatWriteLine(() => CofdStatistics.AvgRote(1));
+        DsiaplayInfo();
 
-        
-        RepeatWriteLine(() => new CofdExtendedAction(5, 5, 5).RollAll());
-        RepeatWriteLine(() => new CofdExtendedAction(5, 10, 5).RollAll());
-        RepeatWriteLine(() => CofdStatistics.AvgExtendedAction(5, 5, 5));
-        RepeatWriteLine(() => CofdStatistics.AvgExtendedAction(5, 10, 5));
+        if (args.Length > 0)
+        {
+            var runner = new AppRunner<AppCommands>(GetAppSettings(""));
+            runner.Run(args);
+        }
+
+        DisplayHelp();
+
+        var regEx = CommandLineRegex();
+
+        ConsoleCommand.SetPrompt(GetPrompt());
+
+        while (!Terminated)
+        {
+            System.Console.Write(GetPrompt());
+            var commandLine = ConsoleCommand.ReadConsoleCommand();
+
+            if (string.IsNullOrEmpty(commandLine))
+                continue;
+
+            var lineArguments = regEx
+                .Matches(commandLine.Trim())
+                .Select(x => x.Value.Trim())
+                .ToArray();
+
+            var runner = new AppRunner<AppCommands>(GetAppSettings(""));
+            runner.Run(lineArguments);
+
+            System.Console.WriteLine();
+        }
     }
 
-    public static void RepeatWriteLine<T>(Func<T> func, int repeatCount = 10)
+    private static string GetPrompt()
     {
-        Repeat(
-            () => { System.Console.WriteLine(func()); }
-        , repeatCount);
+        return "> ";
     }
 
-    public static void Repeat(Action action, int repeatCount = 10)
+    internal static void DisplayHelp(string? command = null)
     {
-        for (int i = 0; i < repeatCount; i++)
-            action();
+        var runner = new AppRunner<AppCommands>(GetAppSettings(""));
+
+        if (string.IsNullOrEmpty(command))
+        {
+            runner.Run("--help");
+        }
+        else
+        {
+            var args = command.Split(' ').ToList();
+            args.Add("--help");
+            runner.Run(args.ToArray());
+        }
     }
+
+
+    private static AppSettings GetAppSettings(string prompt)
+    {
+        return new AppSettings()
+        {
+            Help = new AppHelpSettings()
+            {
+                TextStyle = HelpTextStyle.Basic,
+                UsageAppName = prompt + ">",
+                PrintHelpOption = false,
+            }
+        };
+    }
+
+    public static void DsiaplayInfo()
+    {
+        System.Console.WriteLine("Dice Roller for Chronicles of Darkness.");
+    }
+
+    [GeneratedRegex("(?<=\")[^\"]*(?=\")|[^\" ]+")]
+    private static partial Regex CommandLineRegex();
 }

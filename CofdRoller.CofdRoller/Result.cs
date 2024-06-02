@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Text;
 
 namespace CofDRoller;
 
@@ -36,40 +35,59 @@ public class Result
     public RollResults RollResults { get; set; }
     public string RollType { get; set; }
 
-    public override string ToString()
+    public Text ToText()
     {
-        string dicesString = "";
+        var dicesText = new Text();
         switch (Dices)
         {
             case int n when (n == 0):
-                dicesString = "chance die";
+                dicesText.Add("chance die", Colors.Grey);
                 break;
             case int n when (n == 1):
-                dicesString = "1 die";
+                dicesText.Add("1", TokenType.Number);
+                dicesText.Add(" die");
                 break;
             case int n when (n > 1):
-                dicesString = $"{Dices} dices";
+                dicesText.Add($"{Dices}", TokenType.Number);
+                dicesText.Add(" dices");
                 break;
         }
 
-        var rolledNumbers = new StringBuilder();
+        var rolledNumbers = new Text();
         foreach (var rollResult in RollResults)
         {
-            rolledNumbers.Append(rollResult.RolledNumbers[0]);
+            rolledNumbers.Add(rollResult.RolledNumbers[0]);
             if (rollResult.RolledNumbers.Count > 1)
             {
                 foreach (var x in rollResult.RolledNumbers[1..])
                 {
-                    rolledNumbers.Append("->");
-                    rolledNumbers.Append(x);
+                    rolledNumbers.Add("->", TokenType.Operation);
+                    rolledNumbers.Add(x);
                 }
             }
-            rolledNumbers.Append(" ");
+            rolledNumbers.Add(" ");
         }
-        var rolltype = "";
+        var rolltype = new Text();
         if (RollType != RollTypes._10Again)
-            rolltype = $"({RollType})";
+            rolltype.Add($"({RollType}) ", TokenType.Type);
 
-        return $"{RollResults.Successes} success rolling {dicesString}. {ResultType.GetDisplayName()}. {rolltype} Rolls: {rolledNumbers}";
+        var finalText = new Text()
+            .Add($"{RollResults.Successes}")
+            .Add(" success rolling ")
+            .Add(dicesText)
+            .Add(". ")
+            .Add(ResultType.GetText())
+            .Add(" ")
+            .Add(rolltype)
+            .Add("Rolls: ")
+            .Add(rolledNumbers)
+            ;
+
+        return finalText;
+    }
+
+    public override string ToString()
+    {
+        return ToText().ToString();
     }
 }
