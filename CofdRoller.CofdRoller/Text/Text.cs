@@ -34,6 +34,18 @@ public class Text
         return this;
     }
 
+    public Text Add(decimal number)
+    {
+        TextParts.Add(new TextPart(number.ToString("0.00"), TokenType.Number));
+        return this;
+    }
+
+    public Text AddPercentage(decimal number)
+    {
+        TextParts.Add(new TextPart(number.ToString("0.00%"), TokenType.Number));
+        return this;
+    }
+
     public Text Add(TextPart textPart)
     {
         TextParts.Add(textPart);

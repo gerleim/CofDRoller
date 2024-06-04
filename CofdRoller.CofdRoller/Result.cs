@@ -44,12 +44,12 @@ public class Result
                 dicesText.Add("chance die", Colors.Grey);
                 break;
             case int n when (n == 1):
-                dicesText.Add("1", TokenType.Number);
-                dicesText.Add(" die");
+                dicesText.Add("1", TokenType.Number)
+                    .Add(" die");
                 break;
             case int n when (n > 1):
-                dicesText.Add($"{Dices}", TokenType.Number);
-                dicesText.Add(" dices");
+                dicesText.Add($"{Dices}", TokenType.Number)
+                    .Add(" dices");
                 break;
         }
 
@@ -61,8 +61,8 @@ public class Result
             {
                 foreach (var x in rollResult.RolledNumbers[1..])
                 {
-                    rolledNumbers.Add("->", TokenType.Operation);
-                    rolledNumbers.Add(x);
+                    rolledNumbers.Add("->", TokenType.Operation)
+                        .Add(x);
                 }
             }
             rolledNumbers.Add(" ");

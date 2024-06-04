@@ -56,27 +56,24 @@ internal class AppCommands
     [Command("rollExtendedAction", Description = "")]
     public void RollExtendedAction(int dices, int requiredSuccesses, int rollLimit)
     {
-        // TODO ToText
         Output.WriteLine(
-            new CofdExtendedAction(dices, requiredSuccesses, rollLimit).RollAll().ToString()
+            new CofdExtendedAction(dices, requiredSuccesses, rollLimit).RollAll().ToText()
         );
     }
 
     [Command("statAvg", Description = "")]
     public void StatAvg(int dices)
     {
-        // TODO ToTExt
         Output.WriteLine(
-            CofdStatistics.Avg(dices).ToString()
+            CofdStatistics.Avg(dices).ToText()
         );
     }
 
     [Command("statAvgRote", Description = "")]
     public void StatAvgRote(int dices)
     {
-        // TODO ToTExt
         Output.WriteLine(
-            CofdStatistics.AvgRote(dices).ToString()
+            CofdStatistics.AvgRote(dices).ToText()
         );
     }
 
@@ -85,7 +82,7 @@ internal class AppCommands
     {
         // TODO ToTExt
         Output.WriteLine(
-            CofdStatistics.AvgExtendedAction(dices, requiredSuccesses, rollLimit).ToString()
+            CofdStatistics.AvgExtendedAction(dices, requiredSuccesses, rollLimit).ToText()
         );
     }
 }

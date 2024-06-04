@@ -1,44 +1,87 @@
 ﻿namespace CofDRoller;
 
+public class SuccessCounter
+{
+    public int CasesOfSuccess;
+    public int SumOfSuccesses;
+}
+
 public static class CofdStatistics
 {
-    public static decimal Avg(int dices, int powerOf10Times = 6)
+    public static StatisticsResult Avg(int dices, int powerOf10Times = 7)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
         var cofdRoller = new CofdRoller();
-
-        var successes = ParallelEnumerable.Range(0, numberOfRolls).AsParallel().Sum(x => cofdRoller.Roll(dices).RollResults.Successes);
-
-        return (decimal)successes / numberOfRolls;
+        var successCounterLocal = RunParallel(cofdRoller.Roll, dices, numberOfRolls);
+        return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
     }
 
-
-    public static decimal AvgRote(int dices, int powerOf10Times = 6)
+    public static StatisticsResult AvgRote(int dices, int powerOf10Times = 6)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
         var cofdRoller = new CofdRoller();
 
-        var successes = ParallelEnumerable.Range(0, numberOfRolls).AsParallel().Sum(x => cofdRoller.RollRote(dices).RollResults.Successes);
-
-        return (decimal)successes / numberOfRolls;
+        var successCounterLocal = RunParallel(cofdRoller.RollRote, dices, numberOfRolls);
+        return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
     }
 
-
-    public static decimal AvgExtendedAction(int dices, int requiredSuccesses, int rollLimit, int powerOf10Times = 6)
+    public static StatisticsResult AvgExtendedAction(int dices, int requiredSuccesses, int rollLimit, int powerOf10Times = 6)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
-        var cofdRoller = new CofdRoller();
+        var cofdExtendedAction = new CofdExtendedAction(dices, requiredSuccesses, rollLimit);
+        var successCounterLocal = RunParallel(cofdExtendedAction.RollAll, numberOfRolls);
+        return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
+    }
 
-        var successes = ParallelEnumerable.Range(0, numberOfRolls).AsParallel().Sum(x =>
+    private static SuccessCounter RunParallel(Func<int, Result> func, int dices, int numberOfRolls)
+    {
+        object sync = new();
+        var successCounterLocal = new SuccessCounter();
+        Parallel.For(0, numberOfRolls,
+            () => new SuccessCounter(),
+            (i, pls, successCounter) =>
             {
-                var extendedActionResult = new CofdExtendedAction(dices, requiredSuccesses, rollLimit).RollAll();
-                if (extendedActionResult.ResultType == ResultType.Success
-                    || extendedActionResult.ResultType == ResultType.ExceptionalSuccess)
-                    return 1;
+                var r = func(dices);
+                successCounter.CasesOfSuccess += r.ResultType == ResultType.Success ? 1 : 0;
+                successCounter.SumOfSuccesses += r.RollResults.Successes;
 
-                return 0;
-            });
+                return successCounter;
+            },
+            finalSuccessCounter => {
+                lock (sync)
+                {
+                    successCounterLocal.CasesOfSuccess += finalSuccessCounter.CasesOfSuccess;
+                    successCounterLocal.SumOfSuccesses += finalSuccessCounter.SumOfSuccesses;
+                }
+            }
+        );
 
-        return (decimal)successes / numberOfRolls;
+        return successCounterLocal;
+    }
+
+    private static SuccessCounter RunParallel(Func<ExtendedActionResults> func, int numberOfRolls)
+    {
+        object sync = new();
+        var successCounterLocal = new SuccessCounter();
+        Parallel.For(0, numberOfRolls,
+            () => new SuccessCounter(),
+            (i, pls, successCounter) =>
+            {
+                var r = func();
+                successCounter.CasesOfSuccess += r.ResultType == ResultType.Success ? 1 : 0;
+                successCounter.SumOfSuccesses += r.Successes;
+
+                return successCounter;
+            },
+            finalSuccessCounter => {
+                lock (sync)
+                {
+                    successCounterLocal.CasesOfSuccess += finalSuccessCounter.CasesOfSuccess;
+                    successCounterLocal.SumOfSuccesses += finalSuccessCounter.SumOfSuccesses;
+                }
+            }
+        );
+
+        return successCounterLocal;
     }
 }
