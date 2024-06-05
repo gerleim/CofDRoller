@@ -1,4 +1,4 @@
-﻿namespace CofDRoller;
+﻿namespace CofdRoller.Common;
 
 public class TextPart
 {

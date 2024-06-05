@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace CofDRoller;
+namespace CofdRoller;
 
 public static class EnumExtensions
 {

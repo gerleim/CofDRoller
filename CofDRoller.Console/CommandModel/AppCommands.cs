@@ -1,7 +1,7 @@
-﻿using CofDRoller.Console.Output;
+﻿using CofdRoller.Console.Output;
 using CommandDotNet;
 
-namespace CofDRoller.Console;
+namespace CofdRoller.Console;
 
 internal class AppCommands
 {
@@ -80,9 +80,18 @@ internal class AppCommands
     [Command("statAvgExtendedAction", Description = "")]
     public void StatAvgExtendedAction(int dices, int requiredSuccesses, int rollLimit)
     {
-        // TODO ToTExt
         Output.WriteLine(
             CofdStatistics.AvgExtendedAction(dices, requiredSuccesses, rollLimit).ToText()
         );
+    }
+
+    [Command("statCsv", Description = "")]
+    public void StatCsv()
+    {
+        using (var fw = new FileWriter("CofdStatisctics.csv"))
+        {
+            var cofdStatiscticsCsv = new CofdStatiscticsCsv(fw);
+            cofdStatiscticsCsv.Generate();
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace CofDRoller;
+﻿using CofdRoller.Common;
+
+namespace CofdRoller;
 
 public static class ResultTypeColorizer
 {

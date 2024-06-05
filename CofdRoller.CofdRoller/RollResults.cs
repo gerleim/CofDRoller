@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CofDRoller;
+namespace CofdRoller;
 
 public class RollResults : List<SingleRollResult>
 {

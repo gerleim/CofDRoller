@@ -1,4 +1,4 @@
-﻿namespace CofDRoller.Console;
+﻿namespace CofdRoller.Console;
 
 public class ConsoleCommandTabState
 {

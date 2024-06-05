@@ -1,6 +1,7 @@
-﻿using System.Text;
+﻿using CofdRoller.Common;
+using System.Text;
 
-namespace CofDRoller.Console.Output;
+namespace CofdRoller.Console.Output;
 
 internal class ConsoleOutput : IOutput
 {

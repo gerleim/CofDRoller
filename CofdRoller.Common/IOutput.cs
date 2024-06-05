@@ -1,6 +1,6 @@
-﻿namespace CofDRoller.Console.Output;
+﻿namespace CofdRoller.Common;
 
-internal interface IOutput
+public interface IOutput
 {
     void Write(string message);
     void WriteLine(string message);

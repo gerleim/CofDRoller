@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace CofDRoller.Console;
+namespace CofdRoller.Console;
 public static class ConfigurationLoader
 {
     public static Config Load()

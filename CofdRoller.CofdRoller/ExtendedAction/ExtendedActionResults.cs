@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
+﻿using CofdRoller.Common;
+using System.Diagnostics;
 using System.Text;
 
-namespace CofDRoller;
+namespace CofdRoller;
 
 [DebuggerDisplay("{ToString()}")]
 public class ExtendedActionResults(int dices, int requiredSuccesses, int rollLimit) : List<Result>

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CofDRoller;
+namespace CofdRoller;
 
 public enum ResultType
 {

@@ -1,4 +1,4 @@
-﻿namespace CofDRoller;
+﻿namespace CofdRoller;
 
 public static class BaseRoller
 {

@@ -1,7 +1,7 @@
 ﻿using CommandDotNet;
 using System.Reflection;
 
-namespace CofDRoller.Console;
+namespace CofdRoller.Console;
 
 public static class ConsoleCommandHelper
 {

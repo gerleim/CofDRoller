@@ -1,4 +1,6 @@
-﻿namespace CofDRoller.Console.Output;
+﻿using CofdRoller.Common;
+
+namespace CofdRoller.Console.Output;
 
 internal class OutputWriter
 {

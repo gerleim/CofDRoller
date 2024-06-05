@@ -1,6 +1,7 @@
-﻿using System.Diagnostics;
+﻿using CofdRoller.Common;
+using System.Diagnostics;
 
-namespace CofDRoller;
+namespace CofdRoller;
 
 [DebuggerDisplay("{ToString()}")]
 public class Result

@@ -1,17 +1,10 @@
-﻿namespace CofDRoller;
+﻿namespace CofdRoller;
 
-public class CofdExtendedAction
+public class CofdExtendedAction(int dices, int requiredSuccesses, int rollLimit)
 {
-    public int Dices { get; set; }
-    public int RequiredSuccesses { get; set; }
-    public int RollLimit { get; set; }
-
-    public CofdExtendedAction(int dices, int requiredSuccesses, int rollLimit)
-    {
-        Dices = dices;
-        RequiredSuccesses = requiredSuccesses;
-        RollLimit = rollLimit;
-    }
+    public int Dices { get; set; } = dices;
+    public int RequiredSuccesses { get; set; } = requiredSuccesses;
+    public int RollLimit { get; set; } = rollLimit;
 
     public ExtendedActionResults RollAll()
     {

@@ -1,4 +1,4 @@
-﻿namespace CofDRoller.Console.Console;
+﻿namespace CofdRoller.Console.Console;
 
 public class Colors
 {

@@ -1,4 +1,6 @@
-﻿namespace CofDRoller;
+﻿using CofdRoller.Common;
+
+namespace CofdRoller;
 
 public class StatisticsResult(int casesOfSuccess, int sumOfSuccesses, int numberofRolls)
 {

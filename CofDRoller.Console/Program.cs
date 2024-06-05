@@ -2,7 +2,7 @@
 using CommandDotNet.Help;
 using System.Text.RegularExpressions;
 
-namespace CofDRoller.Console;
+namespace CofdRoller.Console;
 
 public static partial class Program
 {

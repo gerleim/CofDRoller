@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CofDRoller.Tests
+namespace CofdRoller.Tests
 {
     [TestClass]
     public class ResultTests

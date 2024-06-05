@@ -1,10 +1,4 @@
-﻿namespace CofDRoller;
-
-public class SuccessCounter
-{
-    public int CasesOfSuccess;
-    public int SumOfSuccesses;
-}
+﻿namespace CofdRoller;
 
 public static class CofdStatistics
 {
