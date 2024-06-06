@@ -98,7 +98,22 @@ public class ConsoleCommand(List<string> commands)
             }
         }
 
-        previousEnteredCommands.Add(keyPresses);
+        var previousIndex = previousEnteredCommands.IndexOf(keyPresses);
+        if (previousIndex == -1)
+        {
+            if (previousEnteredCommands.Count == 0
+                || previousEnteredCommands[^1] != keyPresses)
+            {
+                previousEnteredCommands.Add(keyPresses);
+                previousCommandIndex = 0;
+            }
+        }
+        else
+        {
+            if(previousEnteredCommands[^1] != keyPresses)
+                previousEnteredCommands.Add(keyPresses);
+        }
+
         return keyPresses;
     }
 
@@ -113,7 +128,7 @@ public class ConsoleCommand(List<string> commands)
     {
         TabState.LastEnteredPart ??= keyPresses;
         
-        var matches = commands.Where(c => c.StartsWith(TabState.LastEnteredPart, StringComparison.InvariantCulture)).OrderBy(c => c).ToList();
+        var matches = commands.Where(c => c.StartsWith(TabState.LastEnteredPart)).OrderBy(c => c).ToList();
         if (matches.Count != 0)
         {
             if (TabState.MatchedCommandIndex < matches.Count - 1)
@@ -139,7 +154,9 @@ public class ConsoleCommand(List<string> commands)
 
     public static void ClearLine()
     {
-        System.Console.Write("\r" + new string(' ', System.Console.WindowWidth) + "\r");
+        System.Console.CursorLeft = 0;
+        System.Console.Write(new string(' ', System.Console.WindowWidth));
+        System.Console.CursorLeft = 0;
     }
 
     public void SetPrompt(string prompt)

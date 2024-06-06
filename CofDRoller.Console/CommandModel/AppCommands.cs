@@ -1,5 +1,6 @@
 ﻿using CofdRoller.Console.Output;
 using CommandDotNet;
+using System.Threading.Tasks;
 
 namespace CofdRoller.Console;
 
@@ -82,14 +83,15 @@ internal class AppCommands
     {
         Output.WriteLine(
             CofdStatistics.AvgExtendedAction(dices, requiredSuccesses, rollLimit).ToText()
-        );
+            );
     }
 
     [Command("statCsv", Description = "")]
-    public void StatCsv()
+    public async Task StatCsv()
     {
-        using var fw = new FileWriter("CofdStatisctics.csv");
-        var cofdStatiscticsCsv = new CofdStatiscticsCsv(fw);
-        cofdStatiscticsCsv.Generate();
+        var fw = new FileWriter("CofdStatisctics.csv");
+        var l = new ConsoleLogOutput();
+        var cofdStatiscticsCsv = new CofdStatiscticsCsv(fw, l);
+        cofdStatiscticsCsv.Generate().ContinueWith((t) => fw.Dispose());
     }
 }

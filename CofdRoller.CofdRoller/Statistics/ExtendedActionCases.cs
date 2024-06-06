@@ -1,4 +1,6 @@
-﻿namespace CofdRoller;
+﻿using System.Collections;
+
+namespace CofdRoller;
 
 public class ExtendedActionCases
 {
@@ -7,8 +9,8 @@ public class ExtendedActionCases
     private readonly List<int> rollLimitsToRoll = Enumerable.Range(3, 4).ToList();*/
 
     private readonly List<int> dicesToRoll = Enumerable.Range(1, 10).ToList();
-    private readonly List<int> requiredSuccessesToRoll = Enumerable.Range(5, 25-5+1).ToList();
-    private readonly List<int> rollLimitsToRoll = Enumerable.Range(3, 20-3+1).ToList();
+    private readonly List<int> requiredSuccessesToRoll = Enumerable.Range(5, 25 - 5 + 1).ToList();
+    private readonly List<int> rollLimitsToRoll = Enumerable.Range(3, 20 - 3 + 1).ToList();
 
     public IEnumerable<ExtendedActionCase> Get()
     {
@@ -22,5 +24,10 @@ public class ExtendedActionCases
                 }
             }
         }
+    }
+
+    public int Count
+    {
+        get { return requiredSuccessesToRoll.Count * requiredSuccessesToRoll.Count * rollLimitsToRoll.Count; }
     }
 }

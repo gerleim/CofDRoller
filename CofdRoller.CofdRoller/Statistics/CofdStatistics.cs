@@ -2,7 +2,7 @@
 
 public static class CofdStatistics
 {
-    public static StatisticsResult Avg(int dices, int powerOf10Times = 7)
+    public static StatisticsResult Avg(int dices, int powerOf10Times = 6)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
         var cofdRoller = new CofdRoller();
@@ -19,12 +19,17 @@ public static class CofdStatistics
         return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
     }
 
-    public static StatisticsResult AvgExtendedAction(int dices, int requiredSuccesses, int rollLimit, int powerOf10Times = 4)
+    public async static Task<StatisticsResult> AvgExtendedActionAsync(int dices, int requiredSuccesses, int rollLimit, int powerOf10Times = 6)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
         var cofdExtendedAction = new CofdExtendedAction(dices, requiredSuccesses, rollLimit);
-        var successCounterLocal = RunParallel(cofdExtendedAction.RollAll, numberOfRolls);
+        var successCounterLocal = await RunParallelAsync(cofdExtendedAction.RollAll, numberOfRolls);
         return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
+    }
+
+    public static StatisticsResult AvgExtendedAction(int dices, int requiredSuccesses, int rollLimit, int powerOf10Times = 6)
+    {
+        return AvgExtendedActionAsync(dices, requiredSuccesses, rollLimit, powerOf10Times).Result;
     }
 
     private static SuccessCounter RunParallel(Func<int, Result> func, int dices, int numberOfRolls)
@@ -75,6 +80,21 @@ public static class CofdStatistics
                 }
             }
         );
+
+        return successCounterLocal;
+    }
+
+    private async static Task<SuccessCounter> RunParallelAsync(Func<ExtendedActionResults> func, int numberOfRolls)
+    {
+        object sync = new();
+        var successCounterLocal = new SuccessCounter();
+        await Parallel.ForAsync(0, numberOfRolls,
+            async (i, ct) =>
+            {
+                var r = func();
+                successCounterLocal.CasesOfSuccess += r.ResultType == ResultType.Success ? 1 : 0;
+                successCounterLocal.SumOfSuccesses += r.Successes;
+            });
 
         return successCounterLocal;
     }
