@@ -127,8 +127,8 @@ public class ConsoleCommand(List<string> commands)
     private string HandleTab(string keyPresses)
     {
         TabState.LastEnteredPart ??= keyPresses;
-        
-        var matches = commands.Where(c => c.StartsWith(TabState.LastEnteredPart)).OrderBy(c => c).ToList();
+
+        var matches = commands.Where(c => c.StartsWith(TabState.LastEnteredPart, StringComparison.InvariantCulture)).OrderBy(c => c).ToList();
         if (matches.Count != 0)
         {
             if (TabState.MatchedCommandIndex < matches.Count - 1)
