@@ -4,14 +4,15 @@ public class ConsoleCommand(List<string> commands)
 {
     private readonly List<string> commands = commands.OrderBy(c => c).ToList();
     private string prompt = "";
-    private readonly List<string> previousEnteredCommands = [];
-    private int previousCommandIndex = 0;
+
+    private readonly ConsoleCommandHistory commandHistory = new();
+
     private readonly ConsoleCommandTabState TabState = new();
     private int cursorPosition = 0;
 
     public string ReadConsoleCommand()
     {
-        var keyPresses = "";
+        var commandEntered = "";
         var breakFlag = false;
         while (!breakFlag)
         {
@@ -19,19 +20,17 @@ public class ConsoleCommand(List<string> commands)
             switch (pressedKey.Key)
             {
                 case ConsoleKey.UpArrow:
-                    if (previousCommandIndex <= previousEnteredCommands.Count - 1)
+                    if (commandHistory.HandlePreviousCommand(ref commandEntered))
                     {
-                        previousCommandIndex += 1;
-                        keyPresses = HandleNextOrPreviousCommand();
-                        cursorPosition = keyPresses.Length;
+                        ReplaceLine(commandEntered);
+                        cursorPosition = commandEntered.Length;
                     }
                     break;
                 case ConsoleKey.DownArrow:
-                    if (previousCommandIndex > 1)
+                    if (commandHistory.HandleNextCommand(ref commandEntered))
                     {
-                        previousCommandIndex -= 1;
-                        keyPresses = HandleNextOrPreviousCommand(); ;
-                        cursorPosition = keyPresses.Length;
+                        ReplaceLine(commandEntered);
+                        cursorPosition = commandEntered.Length;
                     }
                     break;
                 case ConsoleKey.Enter:
@@ -41,15 +40,15 @@ public class ConsoleCommand(List<string> commands)
                     breakFlag = true;
                     break;
                 case ConsoleKey.Tab:
-                    keyPresses = HandleTab(keyPresses);
-                    ReplaceLine(keyPresses);
-                    cursorPosition = keyPresses.Length;
+                    commandEntered = HandleTab(commandEntered);
+                    ReplaceLine(commandEntered);
+                    cursorPosition = commandEntered.Length;
                     break;
                 case ConsoleKey.Backspace:
-                    if (keyPresses.Length > 0)
+                    if (commandEntered.Length > 0)
                     {
                         cursorPosition -= 1;
-                        keyPresses = keyPresses[..^1];
+                        commandEntered = commandEntered[..^1];
                         System.Console.Write("\b \b");
                     }
                     break;
@@ -61,15 +60,15 @@ public class ConsoleCommand(List<string> commands)
                     }
                     break;
                 case ConsoleKey.RightArrow:
-                    if (cursorPosition < keyPresses.Length)
+                    if (cursorPosition < commandEntered.Length)
                     {
                         cursorPosition += 1;
                         System.Console.CursorLeft += 1;
                     }
                     break;
                 case ConsoleKey.Escape:
-                    keyPresses = "";
-                    ReplaceLine(keyPresses);
+                    commandEntered = "";
+                    ReplaceLine(commandEntered);
                     cursorPosition = 0;
                     break;
                 case ConsoleKey.Insert:
@@ -82,8 +81,8 @@ public class ConsoleCommand(List<string> commands)
                 default:
                     {
                         var currentCusrsorPosition = System.Console.CursorLeft;
-                        keyPresses = keyPresses.Insert(cursorPosition, pressedKey.KeyChar.ToString());
-                        ReplaceLine(keyPresses);
+                        commandEntered = commandEntered.Insert(cursorPosition, pressedKey.KeyChar.ToString());
+                        ReplaceLine(commandEntered);
                         cursorPosition += 1;
                         System.Console.CursorLeft = currentCusrsorPosition + 1;
                         break;
@@ -98,23 +97,9 @@ public class ConsoleCommand(List<string> commands)
             }
         }
 
-        var previousIndex = previousEnteredCommands.IndexOf(keyPresses);
-        if (previousIndex == -1)
-        {
-            if (previousEnteredCommands.Count == 0
-                || previousEnteredCommands[^1] != keyPresses)
-            {
-                previousEnteredCommands.Add(keyPresses);
-                previousCommandIndex = 0;
-            }
-        }
-        else
-        {
-            if(previousEnteredCommands[^1] != keyPresses)
-                previousEnteredCommands.Add(keyPresses);
-        }
+        commandHistory.HandleEnter(commandEntered);
 
-        return keyPresses;
+        return commandEntered;
     }
 
     private void ReplaceLine(string keyPresses)
@@ -142,14 +127,6 @@ public class ConsoleCommand(List<string> commands)
         {
             return keyPresses;
         }
-    }
-
-    private string HandleNextOrPreviousCommand()
-    {
-        string keyPresses;
-        keyPresses = previousEnteredCommands[^previousCommandIndex];
-        ReplaceLine(keyPresses);
-        return keyPresses;
     }
 
     public static void ClearLine()
