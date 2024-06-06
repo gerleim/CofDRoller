@@ -78,7 +78,7 @@ public class Result
             .Add(dicesText)
             .Add(". ")
             .Add(ResultType.GetText())
-            .Add(" ")
+            .Add(". ")
             .Add(rolltype)
             .Add("Rolls: ")
             .Add(rolledNumbers)

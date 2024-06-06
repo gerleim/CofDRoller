@@ -19,7 +19,7 @@ public static class CofdStatistics
         return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
     }
 
-    public static StatisticsResult AvgExtendedAction(int dices, int requiredSuccesses, int rollLimit, int powerOf10Times = 6)
+    public static StatisticsResult AvgExtendedAction(int dices, int requiredSuccesses, int rollLimit, int powerOf10Times = 4)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
         var cofdExtendedAction = new CofdExtendedAction(dices, requiredSuccesses, rollLimit);

@@ -1,45 +1,92 @@
 ﻿using CofdRoller.Common;
+using System.Collections;
 using System.Diagnostics;
-using System.Text;
 
 namespace CofdRoller;
 
+public abstract class ExtendedActionResultsBase : IList<Result>
+{
+    private readonly List<Result> results = [];
+    private int successes;
+
+    public int Successes { get => successes; }
+
+    public Result this[int index]
+    {
+        get => results[index];
+        set
+        {
+            successes -= results[index].RollResults.Successes;
+            successes += value.RollResults.Successes;
+            results[index] = value;
+        }
+    }
+
+    public int Count => results.Count;
+
+    public bool IsReadOnly => false;
+
+    public void Add(Result item)
+    {
+        successes += item.RollResults.Successes;
+        results.Add(item);
+    }
+
+    public void Clear()
+    {
+        successes = 0;
+        results.Clear();
+    }
+
+    public bool Contains(Result item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void CopyTo(Result[] array, int arrayIndex)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerator<Result> GetEnumerator()
+    {
+        return results.GetEnumerator();
+    }
+
+    public int IndexOf(Result item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Insert(int index, Result item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool Remove(Result item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RemoveAt(int index)
+    {
+        throw new NotImplementedException();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        throw new NotImplementedException();
+    }
+}
+
 [DebuggerDisplay("{ToString()}")]
-public class ExtendedActionResults(int dices, int requiredSuccesses, int rollLimit) : List<Result>
+public class ExtendedActionResults(int dices, int requiredSuccesses, int rollLimit) : ExtendedActionResultsBase
 {
     public int Dices { get; set; } = dices;
     public int RequiredSuccesses { get; set; } = requiredSuccesses;
     public int RollLimit { get; set; } = rollLimit;
-
-    private ResultType resultType;
-    
-    public ResultType ResultType {
-        get
-        {
-            if (isDirty)
-                Evaluate();
-
-            return resultType;
-        }
-        set
-        {
-            resultType = value;
-        }
-    }
-
-    private int successes;
-    private bool isDirty = true;
-    public int Successes
-    {
-        get
-        {
-            if(isDirty)
-                successes = this.Select(r => r.RollResults.Successes).Sum();
-            
-            return successes;
-        }
-    }
-
+   
+    public ResultType ResultType { get; set; }
     private void Evaluate()
     {
         if (Successes >= RequiredSuccesses)
@@ -81,23 +128,5 @@ public class ExtendedActionResults(int dices, int requiredSuccesses, int rollLim
             .Add(ResultType.GetText());
 
         return text;
-    }
-
-    public new Result this[int index] {
-        get
-        {
-            return base[index];
-        }
-        set
-        {
-            isDirty = true;
-            base[index] = value;
-        }
-    }
-
-    public new void Add(Result item)
-    {
-        isDirty = true;
-        base.Add(item);
     }
 }

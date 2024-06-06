@@ -13,7 +13,7 @@ namespace CofdRoller.Tests
             rollResults.Add(roteSingleRollResult);
             var Result = new Result(0, rollResults);
 
-            Assert.AreEqual("1 success rolling chance die. Success.  Rolls: 9->10 ", Result.ToString());
+            Assert.AreEqual("1 success rolling chance die. Success. Rolls: 9->10 ", Result.ToString());
         }
     }
 }

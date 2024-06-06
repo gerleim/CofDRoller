@@ -1,4 +1,5 @@
 ﻿using CofdRoller.Common;
+using System.Diagnostics;
 
 namespace CofdRoller;
 
@@ -17,7 +18,7 @@ public class CofdStatiscticsCsv(IOutput output)
 
         var extendedActionCases = new ExtendedActionCases();
         foreach(var extendedActionCase in extendedActionCases.Get())
-        { 
+        {
             var statisticsResult = CofdStatistics.AvgExtendedAction(extendedActionCase.Dices, extendedActionCase.RequiredSuccesses, extendedActionCase.RollLimit, 5);
 
             var chanceOfSuccess = (decimal)statisticsResult.CasesOfSuccess / statisticsResult.NumberOfRolls;

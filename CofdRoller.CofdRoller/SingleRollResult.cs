@@ -1,13 +1,7 @@
 ﻿namespace CofdRoller;
 
-public class SingleRollResult
+public class SingleRollResult(int successes, List<int> rolledNumbers)
 {
-    public SingleRollResult(int successes, List<int> rolledNumbers)
-    {
-        Successes = successes;
-        RolledNumbers = rolledNumbers;
-    }
-
-    public int Successes { get; set; }
-    public List<int> RolledNumbers { get; set; }
+    public int Successes { get; set; } = successes;
+    public List<int> RolledNumbers { get; set; } = rolledNumbers;
 }

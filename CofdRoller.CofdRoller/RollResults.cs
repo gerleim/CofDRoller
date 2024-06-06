@@ -1,39 +1,78 @@
-﻿using System;
+﻿using System.Collections;
 
 namespace CofdRoller;
 
-public class RollResults : List<SingleRollResult>
+public class RollResults : IList<SingleRollResult>
 {
-    private int successes;
-    private bool isDirty = true;
-    public int Successes
-    {
-        get
-        {
-            if (isDirty)
-                successes = this.Select(r => r.Successes).Sum();
+    private readonly List<SingleRollResult> rollResults = [];
+    private int successes = 0;
 
-            return successes;
-        }
-    }
+    public int Successes { get => successes; }
 
-    public new SingleRollResult this[int index]
+    public SingleRollResult this[int index]
     {
-        get
-        {
-            return base[index];
-        }
+        get => rollResults[index];
         set
         {
-            isDirty = true;
-            base[index] = value;
+            successes -= rollResults[index].Successes;
+            successes += value.Successes;
+            rollResults[index] = value;
         }
     }
 
-    public new void Add(SingleRollResult item)
+    public int Count => rollResults.Count;
+
+    public bool IsReadOnly => false;
+
+    public void Add(SingleRollResult item)
     {
-        isDirty = true;
-        base.Add(item);
+        successes += item.Successes;
+        rollResults.Add(item);
     }
 
+    public void Clear()
+    {
+        successes = 0;
+        rollResults.Clear(); 
+    }
+
+    public bool Contains(SingleRollResult item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void CopyTo(SingleRollResult[] array, int arrayIndex)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerator<SingleRollResult> GetEnumerator()
+    {
+        return rollResults.GetEnumerator();
+    }
+
+    public int IndexOf(SingleRollResult item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Insert(int index, SingleRollResult item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool Remove(SingleRollResult item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RemoveAt(int index)
+    {
+        throw new NotImplementedException();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        throw new NotImplementedException();
+    }
 }

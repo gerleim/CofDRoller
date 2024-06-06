@@ -88,10 +88,8 @@ internal class AppCommands
     [Command("statCsv", Description = "")]
     public void StatCsv()
     {
-        using (var fw = new FileWriter("CofdStatisctics.csv"))
-        {
-            var cofdStatiscticsCsv = new CofdStatiscticsCsv(fw);
-            cofdStatiscticsCsv.Generate();
-        }
+        using var fw = new FileWriter("CofdStatisctics.csv");
+        var cofdStatiscticsCsv = new CofdStatiscticsCsv(fw);
+        cofdStatiscticsCsv.Generate();
     }
 }

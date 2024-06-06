@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CofdRoller.CofdRoller\CofdRoller.CofdRoller.csproj" />
+    <ProjectReference Include="..\..\CofDRoller.CofdRoller\CofdRoller.CofdRoller.csproj" />
   </ItemGroup>
 
 </Project>
