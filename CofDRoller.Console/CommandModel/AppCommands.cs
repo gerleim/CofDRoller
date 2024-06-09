@@ -1,20 +1,11 @@
 ﻿using CofdRoller.Console.Output;
 using CommandDotNet;
-using System.Threading.Tasks;
 
 namespace CofdRoller.Console;
 
-internal class AppCommands
+public class AppCommands(AppCommandsManager appCommandsManager)
 {
-    private OutputWriter Output { get; init; }
-
-    public AppCommands()
-    {
-        // TOTO Set Outputs from config
-        // Config = ConfigurationLoader.Load();
-        Output = new OutputWriter();
-        Output.Add(new ConsoleOutput());
-    }
+    private readonly AppCommandsManager appCommandsManager = appCommandsManager;
 
     [Command("exit", Description = "Exit from the command-line utility.")]
     public void Exit()
@@ -25,7 +16,7 @@ internal class AppCommands
     [Command("roll", Description = "")]
     public void Roll(int dices)
     {
-        Output.WriteLine(
+        appCommandsManager.Output.WriteLine(
             new CofdRoller().Roll(dices).ToText()
         );
     }
@@ -33,7 +24,7 @@ internal class AppCommands
     [Command("rollRote", Description = "")]
     public void RollRote(int dices)
     {
-        Output.WriteLine(
+        appCommandsManager.Output.WriteLine(
             new CofdRoller().RollRote(dices).ToText()
         );
     }
@@ -41,7 +32,7 @@ internal class AppCommands
     [Command("roll9Again", Description = "")]
     public void Roll9Again(int dices)
     {
-        Output.WriteLine(
+        appCommandsManager.Output.WriteLine(
             new CofdRoller().Roll9Again(dices).ToText()
         );
     }
@@ -49,7 +40,7 @@ internal class AppCommands
     [Command("roll8Again", Description = "")]
     public void Roll8Again(int dices)
     {
-        Output.WriteLine(
+        appCommandsManager.Output.WriteLine(
             new CofdRoller().Roll8Again(dices).ToText()
         );
     }
@@ -57,7 +48,7 @@ internal class AppCommands
     [Command("rollExtendedAction", Description = "")]
     public void RollExtendedAction(int dices, int requiredSuccesses, int rollLimit)
     {
-        Output.WriteLine(
+        appCommandsManager.Output.WriteLine(
             new CofdExtendedAction(dices, requiredSuccesses, rollLimit).RollAll().ToText()
         );
     }
@@ -65,7 +56,7 @@ internal class AppCommands
     [Command("statAvg", Description = "")]
     public void StatAvg(int dices)
     {
-        Output.WriteLine(
+        appCommandsManager.Output.WriteLine(
             CofdStatistics.Avg(dices).ToText()
         );
     }
@@ -73,7 +64,7 @@ internal class AppCommands
     [Command("statAvgRote", Description = "")]
     public void StatAvgRote(int dices)
     {
-        Output.WriteLine(
+        appCommandsManager.Output.WriteLine(
             CofdStatistics.AvgRote(dices).ToText()
         );
     }
@@ -81,17 +72,36 @@ internal class AppCommands
     [Command("statAvgExtendedAction", Description = "")]
     public void StatAvgExtendedAction(int dices, int requiredSuccesses, int rollLimit)
     {
-        Output.WriteLine(
+        appCommandsManager.Output.WriteLine(
             CofdStatistics.AvgExtendedAction(dices, requiredSuccesses, rollLimit).ToText()
             );
     }
 
     [Command("statCsv", Description = "")]
-    public async Task StatCsv()
+    public async Task StatCsv(string? stopCommand)
     {
+        if(stopCommand == "stop")
+        {
+            appCommandsManager.StopBackGroundTask(nameof(StatCsv));
+            return;
+        }
+
+        if (appCommandsManager.CheckBackGroundTask(nameof(StatCsv), out string message))
+        {
+            appCommandsManager.Output.WriteLine(message);
+            return;
+        }
+
         var fw = new FileWriter("CofdStatisctics.csv");
-        var l = new ConsoleLogOutput();
+        var l = new ConsoleLogOutput(appCommandsManager.ConsoleCommand);
         var cofdStatiscticsCsv = new CofdStatiscticsCsv(fw, l);
-        cofdStatiscticsCsv.Generate().ContinueWith((t) => fw.Dispose());
+
+        appCommandsManager.StartBackGroundTask(nameof(StatCsv), (ct) =>
+            cofdStatiscticsCsv.Generate(ct).ContinueWith((t) =>
+                {
+                    // appCommandsManager.Output.WriteLine(t.IsCanceled.ToString());
+                    fw.Dispose();
+                }, CancellationToken.None)
+        );
     }
 }

@@ -1,6 +1,13 @@
 ﻿namespace CofdRoller.Console;
 
-public class ConsoleCommand(List<string> commands)
+public interface IConsoleCommand
+{
+    void ReplaceLine(string message);
+    void RepeatCommandEnteredOnNextLine();
+    object SyncRoot { get; }
+}
+
+public class ConsoleCommand(List<string> commands) : IConsoleCommand
 {
     private readonly List<string> commands = commands.OrderBy(c => c).ToList();
     private string prompt = "";
@@ -10,26 +17,45 @@ public class ConsoleCommand(List<string> commands)
     private readonly ConsoleCommandTabState TabState = new();
     private int cursorPosition = 0;
 
+    private string commandEntered = "";
+
+    public object syncRoot = new();
+
+    public object SyncRoot { get => syncRoot; }
+
     public string ReadConsoleCommand()
     {
-        var commandEntered = "";
         var breakFlag = false;
         while (!breakFlag)
         {
             var pressedKey = System.Console.ReadKey(true);
+            breakFlag = HandleConsoleCommandKey(breakFlag, pressedKey);
+        }
+
+        commandHistory.HandleEnter(commandEntered);
+
+        var result = commandEntered;
+        commandEntered = "";
+        return result;
+    }
+
+    private bool HandleConsoleCommandKey(bool breakFlag, ConsoleKeyInfo pressedKey)
+    {
+        lock (SyncRoot)
+        {
             switch (pressedKey.Key)
             {
                 case ConsoleKey.UpArrow:
                     if (commandHistory.HandlePreviousCommand(ref commandEntered))
                     {
-                        ReplaceLine(commandEntered);
+                        ReplaceLineAddingPrompt(commandEntered);
                         cursorPosition = commandEntered.Length;
                     }
                     break;
                 case ConsoleKey.DownArrow:
                     if (commandHistory.HandleNextCommand(ref commandEntered))
                     {
-                        ReplaceLine(commandEntered);
+                        ReplaceLineAddingPrompt(commandEntered);
                         cursorPosition = commandEntered.Length;
                     }
                     break;
@@ -41,7 +67,7 @@ public class ConsoleCommand(List<string> commands)
                     break;
                 case ConsoleKey.Tab:
                     commandEntered = HandleTab(commandEntered);
-                    ReplaceLine(commandEntered);
+                    ReplaceLineAddingPrompt(commandEntered);
                     cursorPosition = commandEntered.Length;
                     break;
                 case ConsoleKey.Backspace:
@@ -68,7 +94,7 @@ public class ConsoleCommand(List<string> commands)
                     break;
                 case ConsoleKey.Escape:
                     commandEntered = "";
-                    ReplaceLine(commandEntered);
+                    ReplaceLineAddingPrompt(commandEntered);
                     cursorPosition = 0;
                     break;
                 case ConsoleKey.Insert:
@@ -82,36 +108,51 @@ public class ConsoleCommand(List<string> commands)
                     {
                         var currentCusrsorPosition = System.Console.CursorLeft;
                         commandEntered = commandEntered.Insert(cursorPosition, pressedKey.KeyChar.ToString());
-                        ReplaceLine(commandEntered);
+                        ReplaceLineAddingPrompt(commandEntered);
                         cursorPosition += 1;
                         System.Console.CursorLeft = currentCusrsorPosition + 1;
                         break;
                     }
             }
 
-            if (pressedKey.Key != ConsoleKey.Tab) {
+            if (pressedKey.Key != ConsoleKey.Tab)
+            {
                 TabState.MatchedCommandIndex = -1;
                 if (pressedKey.Key != ConsoleKey.RightArrow
                     && pressedKey.Key != ConsoleKey.LeftArrow)
                     TabState.LastEnteredPart = null;
             }
+
+            return breakFlag;
         }
-
-        commandHistory.HandleEnter(commandEntered);
-
-        return commandEntered;
+    }
+    public void ReplaceLine(string message)
+    {
+        ClearLine();
+        System.Console.Write(message);
     }
 
-    private void ReplaceLine(string keyPresses)
+    public void ReplaceLineAddingPrompt(string commandEntered)
     {
         ClearLine();
         System.Console.Write(prompt);
-        System.Console.Write(keyPresses);
+        System.Console.Write(commandEntered);
     }
 
-    private string HandleTab(string keyPresses)
+    public void RepeatCommandEnteredOnNextLine()
     {
-        TabState.LastEnteredPart ??= keyPresses;
+        //var currentCusrsorPosition = System.Console.CursorLeft;
+        //System.Console.CursorVisible = false;
+        System.Console.WriteLine();
+        System.Console.Write(prompt);
+        System.Console.Write(commandEntered);
+        //System.Console.CursorLeft = currentCusrsorPosition;
+        //System.Console.CursorVisible = true;
+    }
+
+    private string HandleTab(string commandEntered)
+    {
+        TabState.LastEnteredPart ??= commandEntered;
 
         var matches = commands.Where(c => c.StartsWith(TabState.LastEnteredPart, StringComparison.InvariantCulture)).OrderBy(c => c).ToList();
         if (matches.Count != 0)
@@ -125,7 +166,7 @@ public class ConsoleCommand(List<string> commands)
         }
         else
         {
-            return keyPresses;
+            return commandEntered;
         }
     }
 

@@ -2,7 +2,7 @@
 
 namespace CofdRoller.Console.Output;
 
-internal class OutputWriter
+public class OutputWriter
 {
     private readonly List<IOutput> outputs = [];
 

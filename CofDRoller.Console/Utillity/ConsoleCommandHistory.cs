@@ -33,6 +33,9 @@ public class ConsoleCommandHistory
 
     public void HandleEnter(string commandEntered)
     {
+        if (commandEntered == "")
+            return;
+
         var previousIndex = CommandsHistory.IndexOf(commandEntered);
         if (previousIndex == -1)
         {

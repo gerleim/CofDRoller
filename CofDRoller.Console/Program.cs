@@ -1,5 +1,7 @@
-﻿using CommandDotNet;
+﻿using Autofac;
+using CommandDotNet;
 using CommandDotNet.Help;
+using CommandDotNet.IoC.Autofac;
 using System.Text.RegularExpressions;
 
 namespace CofdRoller.Console;
@@ -27,6 +29,7 @@ public static partial class Program
         var regEx = CommandLineRegex();
 
         ConsoleCommand.SetPrompt(GetPrompt());
+        var AppCommandsManager = new AppCommandsManager(ConsoleCommand);
 
         while (!Terminated)
         {
@@ -41,10 +44,16 @@ public static partial class Program
                 .Select(x => x.Value.Trim())
                 .ToArray();
 
+            var builder = new ContainerBuilder();
+            
+            builder.RegisterInstance(new AppCommands(AppCommandsManager));
+            var container = builder.Build();
+
             var runner = new AppRunner<AppCommands>(GetAppSettings(""));
+            runner.UseAutofac(container);
             runner.Run(lineArguments);
 
-            System.Console.WriteLine();
+            // System.Console.WriteLine();
         }
     }
 
