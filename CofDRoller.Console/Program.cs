@@ -16,6 +16,8 @@ public static partial class Program
     {
         Config = ConfigurationLoader.Load();
 
+        EnableVirtualTerminalProcessingHack.ApplyHack();
+
         DsiaplayInfo();
 
         if (args.Length > 0)

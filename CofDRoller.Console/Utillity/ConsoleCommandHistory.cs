@@ -9,13 +9,19 @@ public class ConsoleCommandHistory
 
     public bool HandlePreviousCommand(ref string commandEntered)
     {
-        if (CommandOffsetFromLast <= CommandsHistory.Count - 1)
+        if(CommandsHistory.Count == 0)
+            return false;
+
+        if (CommandOffsetFromLast <= CommandsHistory.Count)
         {
-            CommandOffsetFromLast += 1;
+            if(CommandOffsetFromLast <= CommandsHistory.Count -1)
+                CommandOffsetFromLast += 1;
+
             commandEntered = CommandsHistory[^CommandOffsetFromLast];
             return true;
         }
 
+        CommandOffsetFromLast = 0;
         return false;
     }
 
@@ -49,7 +55,14 @@ public class ConsoleCommandHistory
         else
         {
             if (CommandsHistory[^1] != commandEntered)
+            {
                 CommandsHistory.Add(commandEntered);
+                CommandOffsetFromLast = 0;
+            }
+            else
+            {
+                CommandOffsetFromLast = CommandsHistory.Count - 1 - previousIndex;
+            }
         }
     }
 }
