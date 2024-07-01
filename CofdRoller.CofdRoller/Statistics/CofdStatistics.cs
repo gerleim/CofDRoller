@@ -5,7 +5,7 @@ public static class CofdStatistics
     public static StatisticsResult Avg(int dices, int powerOf10Times = 6)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
-        var cofdRoller = new CofdRoller();
+        var cofdRoller = new Roller();
         var successCounterLocal = RunParallel(CancellationToken.None, cofdRoller.Roll, dices, numberOfRolls);
         return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
     }
@@ -13,7 +13,7 @@ public static class CofdStatistics
     public static StatisticsResult AvgRote(int dices, int powerOf10Times = 6)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
-        var cofdRoller = new CofdRoller();
+        var cofdRoller = new Roller();
 
         var successCounterLocal = RunParallel(CancellationToken.None, cofdRoller.RollRote, dices, numberOfRolls);
         return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);

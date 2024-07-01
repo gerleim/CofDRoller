@@ -10,7 +10,7 @@ public class CofdExtendedAction(int dices, int requiredSuccesses, int rollLimit)
     {
         var result = new ExtendedActionResults(Dices, RequiredSuccesses, RollLimit);
         var end = true;
-        var cofdRoller = new CofdRoller();
+        var cofdRoller = new Roller();
         while (end)
         {
             result.Add(cofdRoller.Roll(Dices));

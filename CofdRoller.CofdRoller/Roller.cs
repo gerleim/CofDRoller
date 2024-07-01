@@ -1,6 +1,6 @@
 ﻿namespace CofdRoller;
 
-public class CofdRoller : CofdRollerBase
+public class Roller : CofdRollerBase
 {
     public Result Roll(int dices)
     {

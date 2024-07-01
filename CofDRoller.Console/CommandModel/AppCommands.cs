@@ -17,7 +17,7 @@ public class AppCommands(AppCommandsManager appCommandsManager)
     public void Roll(int dices)
     {
         appCommandsManager.Output.WriteLine(
-            new CofdRoller().Roll(dices).ToText()
+            new Roller().Roll(dices).ToText()
         );
     }
 
@@ -25,7 +25,7 @@ public class AppCommands(AppCommandsManager appCommandsManager)
     public void RollRote(int dices)
     {
         appCommandsManager.Output.WriteLine(
-            new CofdRoller().RollRote(dices).ToText()
+            new Roller().RollRote(dices).ToText()
         );
     }
 
@@ -33,7 +33,7 @@ public class AppCommands(AppCommandsManager appCommandsManager)
     public void Roll9Again(int dices)
     {
         appCommandsManager.Output.WriteLine(
-            new CofdRoller().Roll9Again(dices).ToText()
+            new Roller().Roll9Again(dices).ToText()
         );
     }
 
@@ -41,7 +41,7 @@ public class AppCommands(AppCommandsManager appCommandsManager)
     public void Roll8Again(int dices)
     {
         appCommandsManager.Output.WriteLine(
-            new CofdRoller().Roll8Again(dices).ToText()
+            new Roller().Roll8Again(dices).ToText()
         );
     }
 

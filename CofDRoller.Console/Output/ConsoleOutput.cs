@@ -30,10 +30,10 @@ internal class ConsoleOutput : IOutput
         var sb = new StringBuilder();
         foreach (var parts in text.TextParts)
         {
-            if (parts.Foreground != Colors.Default)
-                sb.Append(Console.Colors.Foreground + MapColor(parts.Foreground));
-            if (parts.Background != Colors.Default)
-                sb.Append(Console.Colors.BackGround + MapColor(parts.Background));
+            if (parts.Foreground != Common.Colors.Default)
+                sb.Append(Colors.Foreground + MapColor(parts.Foreground));
+            if (parts.Background != Common.Colors.Default)
+                sb.Append(Colors.BackGround + MapColor(parts.Background));
             sb.Append(parts.Text);
             sb.Append(ResetColor);
         }
@@ -41,21 +41,22 @@ internal class ConsoleOutput : IOutput
         return sb.ToString();
     }
 
-    private static string MapColor(Colors color)
+    private static string MapColor(Common.Colors color)
     {
+        var red = Common.Colors.Red;
         return color switch
         {
-            Colors.Default => "",
-            Colors.Red => Console.Colors.Red,
-            Colors.Green => Console.Colors.Green,
-            Colors.White => Console.Colors.White,
-            Colors.Black => Console.Colors.Black,
-            Colors.Grey => Console.Colors.Grey,
-            Colors.GreyDark => Console.Colors.GreyDark,
+            Common.Colors.Default => "",
+            Common.Colors.Red => Colors.Red,
+            Common.Colors.Green => Colors.Green,
+            Common.Colors.White => Colors.White,
+            Common.Colors.Black => Colors.Black,
+            Common.Colors.Grey => Colors.Grey,
+            Common.Colors.GreyDark => Colors.GreyDark,
             _ => throw new NotImplementedException()
         };
     }
 
-    private const string ResetColor = Console.Colors.Foreground + Console.Colors.White
-        + Console.Colors.BackGround + Console.Colors.Black;
+    private const string ResetColor = Colors.Foreground + Colors.White
+        + Colors.BackGround + Colors.Black;
 }
