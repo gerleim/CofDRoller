@@ -19,10 +19,11 @@ public class CofdStatiscticsCsv(IOutput output, ILog log)
         var extendedActionCases = new ExtendedActionCases();
         var i = 0;
 
-        log.Write($"{extendedActionCases.Count} cases. ");
-        foreach (var extendedActionCase in extendedActionCases.Get())
+        log.WriteLine($"{extendedActionCases.Count} cases. ");
+        var extendedActionCasesList = extendedActionCases.Get().ToList();
+        foreach (var extendedActionCase in extendedActionCasesList)
         {
-            var statisticsResult = await CofdStatistics.AvgExtendedActionAsync(token, extendedActionCase.Dices, extendedActionCase.RequiredSuccesses, extendedActionCase.RollLimit, 7);
+            var statisticsResult = await CofdStatistics.AvgExtendedActionAsync(token, extendedActionCase.Dices, extendedActionCase.RequiredSuccesses, extendedActionCase.RollLimit, 5);
 
             var chanceOfSuccess = (decimal)statisticsResult.CasesOfSuccess / statisticsResult.NumberOfRolls;
             var avgSuccesses = (decimal)statisticsResult.SumOfSuccesses / statisticsResult.NumberOfRolls;
@@ -35,5 +36,6 @@ public class CofdStatiscticsCsv(IOutput output, ILog log)
             //log.Write($"{i} ");
             i++;
         }
+        log.Write($"{((decimal)i / extendedActionCases.Count).ToString("0.00%")} ");
     }
 }

@@ -1,43 +1,40 @@
 ﻿namespace CofdRoller;
 
-public class CofdExtendedAction(int dices, int requiredSuccesses, int rollLimit)
+public class CofdExtendedAction(int dices, int requiredSuccesses, int rollLimit, int stopAtNthFailure)
 {
     public int Dices { get; set; } = dices;
     public int RequiredSuccesses { get; set; } = requiredSuccesses;
     public int RollLimit { get; set; } = rollLimit;
 
+    public int StopAtNthFailure { get; set; } = stopAtNthFailure;
+
+    private int failureCounter = 0;
+
     public ExtendedActionResults RollAll()
     {
-        var result = new ExtendedActionResults(Dices, RequiredSuccesses, RollLimit);
+        var results = new ExtendedActionResults(Dices, RequiredSuccesses, RollLimit);
         var end = true;
         var cofdRoller = new Roller();
         while (end)
         {
-            result.Add(cofdRoller.Roll(Dices));
+            var result = cofdRoller.Roll(Dices);
+            results.Add(result);
 
-            if (result.Count == RollLimit)
+            if(result.RollResults.Successes == 0)
+            {
+                failureCounter += 1;
+                if (failureCounter >= StopAtNthFailure)
+                    end = false;
+            }
+
+            if (results.Count == RollLimit)
                 end = false;
 
-            if (result.Successes >= RequiredSuccesses)
+            if (results.Successes >= RequiredSuccesses)
                 end = false;
         }
 
-        return result;
+        return results;
     }
 
-}
-
-
-public class Time
-{
-    public int Value { get; set; }
-    public IntervalType IntervalType { get; set; }
-}
-
-public enum IntervalType
-{
-    Minutes,
-    Hours,
-    Days,
-    Weeks
 }

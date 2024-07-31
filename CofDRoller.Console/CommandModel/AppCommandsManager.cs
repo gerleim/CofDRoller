@@ -51,6 +51,11 @@ public class AppCommandsManager
         BackGroundTasks.Add(name, cts);
     }
 
+    public void UnRegisterBackGroundTask(string name)
+    {
+        BackGroundTasks.Remove(name);
+    }
+
     public void StopBackGroundTask(string name)
     {
         if (BackGroundTasks.TryGetValue(name, out CancellationTokenSource? value))

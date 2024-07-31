@@ -46,10 +46,10 @@ public class AppCommands(AppCommandsManager appCommandsManager)
     }
 
     [Command("rollExtendedAction", Description = "")]
-    public void RollExtendedAction(int dices, int requiredSuccesses, int rollLimit)
+    public void RollExtendedAction(int dices, int requiredSuccesses, int rollLimit, int stopAtNthFailure)
     {
         appCommandsManager.Output.WriteLine(
-            new CofdExtendedAction(dices, requiredSuccesses, rollLimit).RollAll().ToText()
+            new CofdExtendedAction(dices, requiredSuccesses, rollLimit, stopAtNthFailure).RollAll().ToText()
         );
     }
 
@@ -70,10 +70,10 @@ public class AppCommands(AppCommandsManager appCommandsManager)
     }
 
     [Command("statAvgExtendedAction", Description = "")]
-    public void StatAvgExtendedAction(int dices, int requiredSuccesses, int rollLimit)
+    public void StatAvgExtendedAction(int dices, int requiredSuccesses, int rollLimit, int stopAtNthFailure)
     {
         appCommandsManager.Output.WriteLine(
-            CofdStatistics.AvgExtendedAction(dices, requiredSuccesses, rollLimit).ToText()
+            CofdStatistics.AvgExtendedAction(dices, requiredSuccesses, rollLimit, stopAtNthFailure).ToText()
             );
     }
 
@@ -101,6 +101,7 @@ public class AppCommands(AppCommandsManager appCommandsManager)
                 {
                     // appCommandsManager.Output.WriteLine(t.IsCanceled.ToString());
                     fw.Dispose();
+                    appCommandsManager.UnRegisterBackGroundTask(nameof(StatCsv));
                 }, CancellationToken.None)
         );
     }

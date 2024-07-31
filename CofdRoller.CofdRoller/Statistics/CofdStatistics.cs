@@ -19,15 +19,15 @@ public static class CofdStatistics
         return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
     }
 
-    public async static Task<StatisticsResult> AvgExtendedActionAsync(CancellationToken ct, int dices, int requiredSuccesses, int rollLimit, int powerOf10Times = 6)
+    public async static Task<StatisticsResult> AvgExtendedActionAsync(CancellationToken ct, int dices, int requiredSuccesses, int rollLimit, int stopAtNthFailure, int powerOf10Times = 6)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
-        var cofdExtendedAction = new CofdExtendedAction(dices, requiredSuccesses, rollLimit);
+        var cofdExtendedAction = new CofdExtendedAction(dices, requiredSuccesses, rollLimit, stopAtNthFailure);
         var successCounterLocal = await RunParallelAsync(ct, cofdExtendedAction.RollAll, numberOfRolls);
         return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
     }
 
-    public static StatisticsResult AvgExtendedAction(int dices, int requiredSuccesses, int rollLimit, int powerOf10Times = 6)
+    public static StatisticsResult AvgExtendedAction(int dices, int requiredSuccesses, int rollLimit, int stopAtNthFailure, int powerOf10Times = 6)
     {
         return AvgExtendedActionAsync(CancellationToken.None, dices, requiredSuccesses, rollLimit, powerOf10Times).Result;
     }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace CofdRoller;
+﻿namespace CofdRoller;
 
 public class ExtendedActionCases
 {
@@ -28,6 +26,6 @@ public class ExtendedActionCases
 
     public int Count
     {
-        get { return requiredSuccessesToRoll.Count * requiredSuccessesToRoll.Count * rollLimitsToRoll.Count; }
+        get { return dicesToRoll.Count * requiredSuccessesToRoll.Count * rollLimitsToRoll.Count; }
     }
 }

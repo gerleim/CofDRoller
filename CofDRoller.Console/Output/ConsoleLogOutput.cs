@@ -41,8 +41,6 @@ internal class ConsoleLogOutput : ConsoleOutput, ILog
 
     public new void WriteLine(string message)
     {
-        if (cursorTopOfLogLine == -1)
-            cursorTopOfLogLine = System.Console.CursorTop;
-        consoleCommand.ReplaceLine(message);
+        System.Console.WriteLine(message);
     }
 }
