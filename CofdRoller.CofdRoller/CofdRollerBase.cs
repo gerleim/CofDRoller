@@ -46,7 +46,10 @@ public class CofdRollerBase
                 var secondRoll = Roll1(11);
                 rr.RolledNumbers.Add(secondRoll.RolledNumbers[0]);
                 if (secondRoll.Successes == 1)
+                {
                     rr.Successes = 1;
+                    rollResults.IncreaseSuccesses();
+                }
             }
         }
 

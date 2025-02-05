@@ -36,6 +36,11 @@ public class RollResults : IList<SingleRollResult>
         rollResults.Clear(); 
     }
 
+    public void IncreaseSuccesses()
+    {
+        successes += 1;
+    }
+
     public bool Contains(SingleRollResult item)
     {
         throw new NotImplementedException();
