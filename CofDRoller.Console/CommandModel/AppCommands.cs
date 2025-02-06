@@ -21,7 +21,7 @@ public class AppCommands(AppCommandsManager appCommandsManager)
         );
     }
 
-    [Command("rollRote", Description = "")]
+    [Command("rollRote", Description = "Roll Rote Action (reroll any dice below 8 once)")]
     public void RollRote(int dices)
     {
         appCommandsManager.Output.WriteLine(
@@ -62,10 +62,10 @@ public class AppCommands(AppCommandsManager appCommandsManager)
     }
 
     [Command("statAvgRote", Description = "")]
-    public void StatAvgRote(int dices)
+    public void StatAvgRote()
     {
         appCommandsManager.Output.WriteLine(
-            CofdStatistics.AvgRote(dices).ToText()
+            CofdStatistics.AvgRote().ToText()
         );
     }
 

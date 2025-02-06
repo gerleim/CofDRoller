@@ -36,9 +36,9 @@ public class RollResults : IList<SingleRollResult>
         rollResults.Clear(); 
     }
 
-    public void IncreaseSuccesses()
+    public void IncreaseSuccesses(int successes)
     {
-        successes += 1;
+        this.successes += successes;
     }
 
     public bool Contains(SingleRollResult item)

@@ -10,13 +10,14 @@ public static class CofdStatistics
         return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
     }
 
-    public static StatisticsResult AvgRote(int dices, int powerOf10Times = 6)
+    public static StatisticsResultExtended AvgRote(int powerOf10Times = 6)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
         var cofdRoller = new Roller();
 
-        var successCounterLocal = RunParallel(CancellationToken.None, cofdRoller.RollRote, dices, numberOfRolls);
-        return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
+        var successesPerDices = RunParallelStatistics(CancellationToken.None, cofdRoller.RollRote, numberOfRolls);
+
+        return new StatisticsResultExtended(successesPerDices, numberOfRolls);
     }
 
     public async static Task<StatisticsResult> AvgExtendedActionAsync(CancellationToken ct, int dices, int requiredSuccesses, int rollLimit, int stopAtNthFailure, int powerOf10Times = 6)
@@ -56,6 +57,51 @@ public static class CofdStatistics
         );
 
         return successCounterLocal;
+    }
+
+    const int numberOfMeasuredMaxDices = 15;
+    public const int numberOfMeasuredSuccesses = 12;
+
+    private static SuccessesPerDices RunParallelStatistics(CancellationToken ct, Func<int, Result> func, int numberOfRolls)
+    {
+        var successesPerDices = new SuccessesPerDices();
+        for (int i = 0; i <= numberOfMeasuredMaxDices; i++ )
+        {
+            var howManySuccessPerSuccesPartial = RunParallelStatisticsImplementation(ct, func, i, numberOfRolls);
+            successesPerDices[i] = howManySuccessPerSuccesPartial;
+        }
+        return successesPerDices;
+    }
+
+    private static HowManySuccessPerSuccess RunParallelStatisticsImplementation(CancellationToken ct, Func<int, Result> func, int dices, int numberOfRolls)
+    {
+        object sync = new();
+        var howManySuccessPerSuccesLocal = new HowManySuccessPerSuccess();
+        Parallel.For(0, numberOfRolls, new ParallelOptions { CancellationToken = ct },
+            () => new HowManySuccessPerSuccess(),
+            (i, pls, howManySucessPerSucces) =>
+            {
+                var r = func(dices);
+                if (r.RollResults.Successes <= numberOfMeasuredSuccesses)
+                {
+                    if (r.ResultType == ResultType.Success)
+                        howManySuccessPerSuccesLocal[r.RollResults.Successes].NumberOfSuccesses += 1;
+
+                    howManySuccessPerSuccesLocal[r.RollResults.Successes].NumberOfRolls += 1;
+                    howManySuccessPerSuccesLocal.NumberOfRolls2 += 1;
+                }
+
+                return howManySuccessPerSuccesLocal;
+            },
+            finalhowManySucessPerSucces => {
+                lock (sync)
+                {
+                    howManySuccessPerSuccesLocal = finalhowManySucessPerSucces;
+                }
+            }
+        );
+
+        return howManySuccessPerSuccesLocal;
     }
 
     private static SuccessCounter RunParallel(Func<ExtendedActionResults> func, int numberOfRolls)
