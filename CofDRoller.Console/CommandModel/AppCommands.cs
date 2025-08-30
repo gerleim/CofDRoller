@@ -61,11 +61,27 @@ public class AppCommands(AppCommandsManager appCommandsManager)
         );
     }
 
+    [Command("stat9Again", Description = "")]
+    public void Stat9Again(int dices)
+    {
+        appCommandsManager.Output.WriteLine(
+            CofdStatistics.Avg9Again(dices).ToText()
+        );
+    }
+
     [Command("statAvgRote", Description = "")]
     public void StatAvgRote()
     {
         appCommandsManager.Output.WriteLine(
-            CofdStatistics.AvgRote().ToText()
+            CofdStatistics.StatAvgRote().ToText()
+        );
+    }
+
+    [Command("statAvg9Again", Description = "")]
+    public void Stat9Again()
+    {
+        appCommandsManager.Output.WriteLine(
+            CofdStatistics.StatAvg9Again().ToText()
         );
     }
 

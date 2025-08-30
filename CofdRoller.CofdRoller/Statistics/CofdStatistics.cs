@@ -10,7 +10,25 @@ public static class CofdStatistics
         return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
     }
 
-    public static StatisticsResultExtended AvgRote(int powerOf10Times = 6)
+    public static StatisticsResult Avg9Again(int dices, int powerOf10Times = 6)
+    {
+        var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
+        var cofdRoller = new Roller();
+        var successCounterLocal = RunParallel(CancellationToken.None, cofdRoller.Roll9Again, dices, numberOfRolls);
+        return new StatisticsResult(successCounterLocal.CasesOfSuccess, successCounterLocal.SumOfSuccesses, numberOfRolls);
+    }
+
+    public static StatisticsResultExtended StatAvg9Again(int powerOf10Times = 6)
+    {
+        var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
+        var cofdRoller = new Roller();
+
+        var successesPerDices = RunParallelStatistics(CancellationToken.None, cofdRoller.Roll9Again, numberOfRolls);
+
+        return new StatisticsResultExtended(successesPerDices, numberOfRolls);
+    }
+
+    public static StatisticsResultExtended StatAvgRote(int powerOf10Times = 6)
     {
         var numberOfRolls = (int)Math.Pow(10, powerOf10Times);
         var cofdRoller = new Roller();
@@ -42,7 +60,7 @@ public static class CofdStatistics
             (i, pls, successCounter) =>
             {
                 var r = func(dices);
-                successCounter.CasesOfSuccess += r.ResultType == ResultType.Success ? 1 : 0;
+                successCounter.CasesOfSuccess += r.ResultType == ResultType.Success || r.ResultType == ResultType.ExceptionalSuccess ? 1 : 0;
                 successCounter.SumOfSuccesses += r.RollResults.Successes;
 
                 return successCounter;
